@@ -14,6 +14,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -25,26 +26,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String token = request.getHeader("Authorization");
+        String authHeader = request.getHeader("Authorization");
 
-        if (token != null && token.startsWith("Bearer ")) {
-            try {
-                String jwt = token.substring(7);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-                DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC512(JWT_SECRET.getBytes()))
-                        .build()
-                        .verify(jwt);
+        try {
+            String token = authHeader.substring(7);
 
-                String username = decodedJWT.getSubject();
-                String role = decodedJWT.getClaim("role").asString();
+            DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC512(JWT_SECRET.getBytes()))
+                    .build()
+                    .verify(token);
 
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        username, null, List.of(new SimpleGrantedAuthority("ROLE_" + role)));
+            String username = decodedJWT.getSubject();
+            String role = decodedJWT.getClaim("role").asString();
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                    username,
+                    null,
+                    role != null ? Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role)) : Collections.emptyList()
+            );
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        } catch (Exception e) {
+
+            SecurityContextHolder.clearContext();
         }
 
         filterChain.doFilter(request, response);

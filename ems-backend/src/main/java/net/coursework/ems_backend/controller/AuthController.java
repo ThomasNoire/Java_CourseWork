@@ -25,7 +25,7 @@ public class AuthController {
         User user = userService.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
-        if (!user.getPassword().equals(password)) { // Тут для навчання, у продакшені треба bcrypt
+        if (!user.getPassword().equals(password)) {
             throw new RuntimeException("Invalid credentials");
         }
 
@@ -34,8 +34,9 @@ public class AuthController {
                 .map(r -> r.getName().replace("ROLE_", ""))
                 .orElse("USER");
 
-        return jwtTokenUtil.generateToken(email, role);
+        return jwtTokenUtil.generateToken(email, role);  // Генеруємо токен з роллю
     }
+
 
     public static class LoginRequest {
         private String email;

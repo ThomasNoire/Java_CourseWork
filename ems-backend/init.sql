@@ -39,7 +39,7 @@ ON CONFLICT (name) DO NOTHING;
 
 -- Вставка користувачів
 INSERT INTO users (email, password) VALUES
-('booking.bogdan@gmail.com', 'admin') -- тут краще буде bcrypt хешувати пароль у коді
+('booking.bogdan@gmail.com', 'admin')
 ON CONFLICT (email) DO NOTHING;
 
 INSERT INTO users (email, password) VALUES

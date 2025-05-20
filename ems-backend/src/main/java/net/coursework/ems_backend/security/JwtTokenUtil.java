@@ -19,4 +19,5 @@ public class JwtTokenUtil {
                 .withExpiresAt(new Date(System.currentTimeMillis() + JWT_EXPIRATION_TIME))
                 .sign(Algorithm.HMAC512(JWT_SECRET.getBytes()));
     }
+
 }
