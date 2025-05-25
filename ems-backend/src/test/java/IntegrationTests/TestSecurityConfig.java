@@ -36,18 +36,17 @@ public class TestSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/", "/swagger-ui/**", "/v3/api-docs/**", "/login/**").permitAll()
-                        .anyRequest().authenticated() // Require authentication for all other endpoints
+//                        .requestMatchers("/", "/swagger-ui/**", "/v3/api-docs/**", "/login/**, /register/**").permitAll()
+                                .requestMatchers("/", "/swagger-ui/**", "/v3/api-docs/**", "/login/**", "/register/**").permitAll()
+                                .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptions -> exceptions
-                        // This ensures authentication failures return 401 instead of 403
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             response.getWriter().write("Authentication required");
                         })
                 );
 
-        // Add JWT filter before the standard authentication filter
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -55,7 +54,6 @@ public class TestSecurityConfig {
 
     @Bean
     public UserDetailsService testUserDetailsService() {
-        // Create test users in memory
         InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
 
         manager.createUser(

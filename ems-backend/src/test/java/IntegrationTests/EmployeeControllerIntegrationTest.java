@@ -41,7 +41,6 @@ public class EmployeeControllerIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    // Token for admin and user roles
     private String adminToken;
     private String userToken;
 
@@ -49,14 +48,11 @@ public class EmployeeControllerIntegrationTest {
 
     @BeforeEach
     public void setup() {
-        // Clear database before each test
         employeeRepository.deleteAll();
 
-        // Generate tokens for testing
         adminToken = jwtTokenUtil.generateToken("admin@example.com", "ADMIN");
         userToken = jwtTokenUtil.generateToken("user@example.com", "USER");
 
-        // Create test employee to be used in tests
         createEmployeeForTesting();
     }
 
@@ -84,7 +80,6 @@ public class EmployeeControllerIntegrationTest {
         }
     }
 
-    // Test for creating an employee with admin role
     @Test
     public void testCreateEmployee() throws Exception {
         String employeeJson = """
@@ -144,7 +139,6 @@ public class EmployeeControllerIntegrationTest {
 
     @Test
     public void testAuthenticationWithToken() throws Exception {
-        // Try to get all employees - requires ADMIN or USER role
         mockMvc.perform(get("/api/employees")
                         .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk());
@@ -152,12 +146,10 @@ public class EmployeeControllerIntegrationTest {
 
     @Test
     public void testUserRoleAccess() throws Exception {
-        // User with USER role should have access to GET requests
         mockMvc.perform(get("/api/employees")
                         .header("Authorization", "Bearer " + userToken))
                 .andExpect(status().isOk());
 
-        // But should not have access to POST requests (creating an employee)
         String employeeJson = """
             {
                 "firstName": "Test",
@@ -170,13 +162,12 @@ public class EmployeeControllerIntegrationTest {
                         .header("Authorization", "Bearer " + userToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(employeeJson))
-                .andExpect(status().isForbidden());  // Expect 403 Forbidden
+                .andExpect(status().isForbidden());
     }
 
     @Test
     public void testAuthenticationWithoutToken() throws Exception {
-        // Try to get all employees without a token
         mockMvc.perform(get("/api/employees"))
-                .andExpect(status().isUnauthorized());  // Expect 401 Unauthorized
+                .andExpect(status().isUnauthorized());
     }
 }

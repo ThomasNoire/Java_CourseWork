@@ -27,7 +27,6 @@ public class User {
 
     public User() {}
 
-    // геттери, сеттери
     public Long getId() { return id; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }

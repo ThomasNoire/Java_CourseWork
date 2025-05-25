@@ -18,9 +18,9 @@
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
-		<java.version>21</java.version>
-		<maven.compiler.source>21</maven.compiler.source>
-		<maven.compiler.target>21</maven.compiler.target>
+		<java.version>17</java.version>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
 	</properties>
 
 	<dependencies>
@@ -39,7 +39,7 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-				<groupId>org.projectlombok</groupId>
+			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 			<scope>provided</scope>
@@ -50,7 +50,6 @@
 			<version>3.4.5</version>
 			<scope>test</scope>
 		</dependency>
-
 
 		<dependency>
 			<groupId>org.springdoc</groupId>
@@ -67,7 +66,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
-
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -118,8 +116,6 @@
 			<scope>test</scope>
 		</dependency>
 
-
-
 	</dependencies>
 
 	<repositories>
@@ -131,6 +127,7 @@
 
 	<build>
 		<plugins>
+			<!-- Компиляція -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -141,8 +138,11 @@
 							<artifactId>lombok</artifactId>
 						</path>
 					</annotationProcessorPaths>
+					<!-- Це не для фільтрації тестів, тому видалено includes -->
 				</configuration>
 			</plugin>
+
+			<!-- Плагін Spring Boot для пакування -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -153,8 +153,31 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+					<!-- Видалені includes, щоб уникнути помилок -->
 				</configuration>
 			</plugin>
+
+			<!-- Плагін для запуску інтеграційних тестів -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>3.0.0-M8</version>
+				<configuration>
+					<includes>
+						<include>**/*IT.java</include>
+						<include>**/*IntegrationTest.java</include>
+					</includes>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 	</build>
 
